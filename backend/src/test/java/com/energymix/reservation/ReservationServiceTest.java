@@ -7,7 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,22 +30,22 @@ class ReservationServiceTest {
     private final ReservationService service = new ReservationService(reservationRepository, chargerRepository, clock);
 
     @Test
-    void shouldCreateReservation_whenRequestIsValid() {
+    void shouldCreateReservation_interpretingStartAsUkTime() {
         // given
         when(chargerRepository.findById(1L)).thenReturn(Optional.of(mock(Charger.class)));
         when(reservationRepository.saveAndFlush(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        ReservationResponse result = service.create(CLIENT_ID, request("2026-07-01T14:00:00Z", 3));
+        ReservationResponse result = service.create(CLIENT_ID, request("2026-07-01T14:00:00", 3));
 
         // then
-        assertThat(result.startTime()).isEqualTo(Instant.parse("2026-07-01T14:00:00Z"));
-        assertThat(result.endTime()).isEqualTo(Instant.parse("2026-07-01T17:00:00Z"));
+        assertThat(result.startTime()).isEqualTo(Instant.parse("2026-07-01T13:00:00Z")); // 14:00 BST = 13:00 UTC
+        assertThat(result.endTime()).isEqualTo(Instant.parse("2026-07-01T16:00:00Z"));
     }
 
     @Test
     void shouldReject_whenStartIsInThePast() {
-        assertThatThrownBy(() -> service.create(CLIENT_ID, request("2026-07-01T09:00:00Z", 1)))
+        assertThatThrownBy(() -> service.create(CLIENT_ID, request("2026-07-01T09:00:00", 1)))
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessageContaining("past");
     }
@@ -57,15 +57,15 @@ class ReservationServiceTest {
         when(reservationRepository.saveAndFlush(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        ReservationResponse result = service.create(CLIENT_ID, request("2026-07-01T14:30:00Z", 2));
+        ReservationResponse result = service.create(CLIENT_ID, request("2026-07-01T14:30:00", 2));
 
         // then
-        assertThat(result.endTime()).isEqualTo(Instant.parse("2026-07-01T16:30:00Z"));
+        assertThat(result.endTime()).isEqualTo(Instant.parse("2026-07-01T15:30:00Z"));
     }
 
     @Test
     void shouldReject_whenStartIsNotOnFullOrHalfHour() {
-        assertThatThrownBy(() -> service.create(CLIENT_ID, request("2026-07-01T14:15:00Z", 1)))
+        assertThatThrownBy(() -> service.create(CLIENT_ID, request("2026-07-01T14:15:00", 1)))
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessageContaining("full or half hour");
     }
@@ -76,7 +76,7 @@ class ReservationServiceTest {
         when(chargerRepository.findById(1L)).thenReturn(Optional.empty());
 
         // when / then
-        assertThatThrownBy(() -> service.create(CLIENT_ID, request("2026-07-01T14:00:00Z", 1)))
+        assertThatThrownBy(() -> service.create(CLIENT_ID, request("2026-07-01T14:00:00", 1)))
                 .isInstanceOf(ChargerNotFoundException.class);
     }
 
@@ -87,7 +87,7 @@ class ReservationServiceTest {
         when(reservationRepository.saveAndFlush(any())).thenThrow(new DataIntegrityViolationException("overlap"));
 
         // when / then
-        assertThatThrownBy(() -> service.create(CLIENT_ID, request("2026-07-01T14:00:00Z", 1)))
+        assertThatThrownBy(() -> service.create(CLIENT_ID, request("2026-07-01T14:00:00", 1)))
                 .isInstanceOf(ReservationConflictException.class);
     }
 
@@ -113,6 +113,6 @@ class ReservationServiceTest {
     }
 
     private static CreateReservationRequest request(String start, int hours) {
-        return new CreateReservationRequest(1L, OffsetDateTime.parse(start), hours);
+        return new CreateReservationRequest(1L, LocalDateTime.parse(start), hours);
     }
 }

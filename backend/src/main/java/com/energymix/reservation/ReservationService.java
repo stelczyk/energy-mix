@@ -28,7 +28,7 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse create(UUID clientId, CreateReservationRequest request) {
-        Instant start = request.startTime().toInstant();
+        Instant start = request.startTime().atZone(clock.getZone()).toInstant();
         if (start.isBefore(clock.instant())) {
             throw new InvalidReservationException("Reservation cannot start in the past.");
         }
