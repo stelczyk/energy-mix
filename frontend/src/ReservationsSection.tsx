@@ -7,11 +7,18 @@ export function ReservationsSection() {
   const [chargers, setChargers] = useState<Charger[]>([])
   const [reservations, setReservations] = useState<Reservation[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [version, setVersion] = useState(0)
 
   const loadReservations = () =>
     getMyReservations()
       .then(setReservations)
       .catch((e: Error) => setError(e.message))
+
+  // reload own list and the calendar after booking or cancelling
+  const refresh = () => {
+    loadReservations()
+    setVersion((v) => v + 1)
+  }
 
   useEffect(() => {
     getChargers()
@@ -24,7 +31,7 @@ export function ReservationsSection() {
     if (!window.confirm(`Cancel booking at ${reservation.chargerName}?`)) return
     try {
       await cancelReservation(reservation.id)
-      loadReservations()
+      refresh()
     } catch (e) {
       setError((e as Error).message)
     }
@@ -33,7 +40,7 @@ export function ReservationsSection() {
   return (
     <section className="reservations">
       <h2>Book a charger</h2>
-      {chargers.length > 0 && <ReservationForm chargers={chargers} onBooked={loadReservations} />}
+      {chargers.length > 0 && <ReservationForm chargers={chargers} version={version} onBooked={refresh} />}
       <h3>My reservations (UK time)</h3>
       {error && (
         <p role="alert" className="error">

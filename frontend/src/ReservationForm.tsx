@@ -1,10 +1,17 @@
 import { useState, type FormEvent } from 'react'
 import { createReservation, type Charger } from './api'
+import { DayCalendar } from './DayCalendar'
 import { HALF_HOURS, todayInUk } from './time'
 
 const HOURS = [1, 2, 3, 4, 5, 6]
 
-export function ReservationForm({ chargers, onBooked }: { chargers: Charger[]; onBooked: () => void }) {
+interface Props {
+  chargers: Charger[]
+  version: number
+  onBooked: () => void
+}
+
+export function ReservationForm({ chargers, version, onBooked }: Props) {
   const [chargerId, setChargerId] = useState(chargers[0].id)
   const [date, setDate] = useState(todayInUk())
   const [time, setTime] = useState('12:00')
@@ -65,6 +72,7 @@ export function ReservationForm({ chargers, onBooked }: { chargers: Charger[]; o
       <button type="submit" disabled={saving}>
         {saving ? 'Booking…' : 'Book'}
       </button>
+      <DayCalendar chargerId={chargerId} date={date} version={version} selected={time} onSelect={setTime} />
       {error && (
         <p role="alert" className="error">
           {error}

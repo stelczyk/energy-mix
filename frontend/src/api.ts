@@ -63,3 +63,12 @@ export const createReservation = (body: { chargerId: number; startTime: string; 
 
 export const cancelReservation = (id: number) =>
   request<void>(`/api/v1/reservations/${id}`, { method: 'DELETE' })
+
+export interface OccupiedSlot {
+  startTime: string
+  endTime: string
+  mine: boolean
+}
+
+export const getOccupiedSlots = (chargerId: number, date: string) =>
+  request<OccupiedSlot[]>(`/api/v1/chargers/${chargerId}/reservations?date=${date}`)

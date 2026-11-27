@@ -18,3 +18,8 @@ export const HALF_HOURS = Array.from(
   { length: 48 },
   (_, i) => `${String(Math.floor(i / 2)).padStart(2, '0')}:${i % 2 ? '30' : '00'}`,
 )
+
+// "2026-11-29T14:30" in UK time; 'sv-SE' happens to format as YYYY-MM-DD HH:MM:SS
+export function ukDateTime(ms: number) {
+  return new Date(ms).toLocaleString('sv-SE', { timeZone: 'Europe/London' }).slice(0, 16).replace(' ', 'T')
+}

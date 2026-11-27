@@ -136,3 +136,44 @@ body {
   padding: 0.5rem 0;
   border-bottom: 1px solid #8884;
 }
+
+.availability {
+  width: 100%;
+}
+
+.day-calendar {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr));
+  gap: 4px;
+}
+
+.slot {
+  padding: 0.35rem 0;
+  border: 1px solid #8886;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.slot-booked {
+  background: #8884;
+  cursor: not-allowed;
+}
+
+.slot-mine {
+  background: #257de0;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.slot-past {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.slot-selected {
+  outline: 2px solid #257de0;
+  outline-offset: 1px;
+}
