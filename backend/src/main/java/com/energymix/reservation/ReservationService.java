@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
@@ -60,5 +62,17 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findByIdAndClientId(reservationId, clientId)
                 .orElseThrow(() -> new ReservationNotFoundException(reservationId));
         reservationRepository.delete(reservation);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OccupiedSlot> findOccupied(Long chargerId, LocalDate date, UUID clientId) {
+        ZoneId zone = clock.getZone();
+        Instant dayStart = date.atStartOfDay(zone).toInstant();
+        Instant dayEnd = date.plusDays(1).atStartOfDay(zone).toInstant();
+        return reservationRepository
+                .findByChargerIdAndStartTimeBeforeAndEndTimeAfterOrderByStartTime(chargerId, dayEnd, dayStart)
+                .stream()
+                .map(r -> new OccupiedSlot(r.getStartTime(), r.getEndTime(), r.getClientId().equals(clientId)))
+                .toList();
     }
 }

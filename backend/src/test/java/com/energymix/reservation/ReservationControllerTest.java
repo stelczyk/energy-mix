@@ -120,6 +120,45 @@ class ReservationControllerTest {
         assertThat(book(1, "2099-01-01T10:00:00", 2)).hasStatus(HttpStatus.CREATED);
     }
 
+    @Test
+    void shouldReturnOccupiedSlotsOfChargerOnGivenDay() {
+        // given
+        book(1, "2099-01-01T10:00:00", 1);
+        bookAs(OTHER_CLIENT_ID, 1, "2099-01-01T12:00:00", 1);
+        bookAs(OTHER_CLIENT_ID, 2, "2099-01-01T10:00:00", 1); // other charger
+        book(1, "2099-01-02T10:00:00", 1);                    // other day
+
+        // when / then
+        var json = assertThat(occupied(1, "2099-01-01")).hasStatusOk().bodyJson();
+        json.extractingPath("$[*].startTime").asArray()
+                .containsExactly("2099-01-01T10:00:00Z", "2099-01-01T12:00:00Z");
+        json.extractingPath("$[*].mine").asArray().containsExactly(true, false);
+    }
+
+    @Test
+    void shouldShowReservationCrossingMidnight_onBothDays() {
+        // given
+        book(1, "2099-01-01T23:00:00", 2);
+
+        // when / then
+        assertThat(occupied(1, "2099-01-01")).bodyJson().extractingPath("$").asArray().hasSize(1);
+        assertThat(occupied(1, "2099-01-02")).bodyJson().extractingPath("$").asArray().hasSize(1);
+    }
+
+    private MvcTestResult occupied(long chargerId, String date) {
+        return mvc.get().uri("/api/v1/chargers/{id}/reservations?date={date}", chargerId, date)
+                .header("X-Client-Id", CLIENT_ID)
+                .exchange();
+    }
+
+    private MvcTestResult bookAs(String clientId, long chargerId, String start, int hours) {
+        return mvc.post().uri("/api/v1/reservations")
+                .header("X-Client-Id", clientId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body(chargerId, start, hours))
+                .exchange();
+    }
+
     private Long createAndGetId() {
         book(1, "2099-01-01T10:00:00", 2);
         return repository.findAll().getFirst().getId();

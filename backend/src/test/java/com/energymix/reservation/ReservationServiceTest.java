@@ -7,6 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
@@ -110,6 +111,16 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> service.cancel(CLIENT_ID, 5L))
                 .isInstanceOf(ReservationNotFoundException.class);
         verify(reservationRepository, never()).delete(any());
+    }
+
+    @Test
+    void shouldQueryOccupiedSlots_withinUkDay() {
+        // when - summer: UK day 2 July starts at 23:00 UTC on 1 July
+        service.findOccupied(1L, LocalDate.parse("2026-07-02"), CLIENT_ID);
+
+        // then
+        verify(reservationRepository).findByChargerIdAndStartTimeBeforeAndEndTimeAfterOrderByStartTime(
+                1L, Instant.parse("2026-07-02T23:00:00Z"), Instant.parse("2026-07-01T23:00:00Z"));
     }
 
     private static CreateReservationRequest request(String start, int hours) {

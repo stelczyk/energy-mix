@@ -14,4 +14,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByClientIdAndEndTimeAfterOrderByStartTime(UUID clientId, Instant now);
 
     Optional<Reservation> findByIdAndClientId(Long id, UUID clientId);
+
+    List<Reservation> findByChargerIdAndStartTimeBeforeAndEndTimeAfterOrderByStartTime(
+            Long chargerId, Instant dayEnd, Instant dayStart);
 }
