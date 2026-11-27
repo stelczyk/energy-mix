@@ -79,3 +79,29 @@ body {
   .fuel-COAL { fill: #eb6263; }
   .fuel-OTHER { fill: #9c9c9c; }
 }
+
+.charging-window {
+  margin-top: 2rem;
+}
+
+.charging-window form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.charging-window label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.result {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.error {
+  color: #e5484d;
+}

@@ -14,7 +14,13 @@ export interface ChargingWindow {
 }
 
 async function getJson<T>(path: string): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`)
+  let response: Response
+  try {
+    response = await fetch(`${API_URL}${path}`)
+  } catch {
+    // fetch throws only when the server can't be reached at all (down, offline, CORS)
+    throw new Error('Cannot reach the server. Check your connection and try again.')
+  }
   if (!response.ok) {
     // backend returns ProblemDetail - show its "detail" to the user
     const problem = await response.json().catch(() => null)

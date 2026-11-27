@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getDailyMix, type DailyMix } from './api'
+import { ChargingWindowForm } from './ChargingWindowForm'
 import { EnergyMixChart } from './EnergyMixChart'
 
 export default function App() {
@@ -13,12 +14,13 @@ export default function App() {
   return (
     <main>
       <h1>UK Energy Mix</h1>
-      {error && <p role="alert">{error}</p>}
+      {error && <p role="alert" className="error">{error}</p>}
       <section className="days">
         {days.map((day) => (
           <EnergyMixChart key={day.date} day={day} />
         ))}
       </section>
+      <ChargingWindowForm />
     </main>
   )
 }
