@@ -1,5 +1,6 @@
 package com.energymix;
 
+import com.energymix.chargingwindow.NotEnoughForecastDataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -18,5 +19,10 @@ public class ApiExceptionHandler {
         log.warn("Carbon Intensity API call failed", exception);
         return ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE,
                 "Energy data provider is temporarily unavailable. Please try again later.");
+    }
+
+    @ExceptionHandler(NotEnoughForecastDataException.class)
+    ProblemDetail handleNotEnoughData(NotEnoughForecastDataException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, exception.getMessage());
     }
 }
