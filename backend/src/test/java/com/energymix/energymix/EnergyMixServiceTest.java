@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,11 +41,29 @@ class EnergyMixServiceTest {
         List<DailyMix> result = service.getDailyMix();
 
         // then
-        assertThat(result).extracting(DailyMix::date)
-                .containsExactly(LocalDate.parse("2026-07-01"), LocalDate.parse("2026-07-02"));
+        assertThat(result).extracting(DailyMix::date).containsExactly(
+                LocalDate.parse("2026-07-01"), LocalDate.parse("2026-07-02"), LocalDate.parse("2026-07-03"));
         assertThat(result.get(0).fuels()).containsEntry(FuelType.WIND, 70.0).containsEntry(FuelType.GAS, 30.0);
         assertThat(result.get(0).cleanPercentage()).isEqualTo(70.0);
+        assertThat(result.get(0).complete()).isFalse();             // only 2 of 48 intervals
+        assertThat(result.get(2).cleanPercentage()).isNull();       // no forecast for 3 July
+        assertThat(result.get(2).fuels()).isEmpty();
         verify(client).getGeneration(Instant.parse("2026-06-30T23:00:00Z"), Instant.parse("2026-07-03T23:00:00Z"));
+    }
+
+    @Test
+    void shouldMarkDayComplete_whenAllIntervalsArePresent() {
+        // given - 48 half-hours of 2 July London time (starts 2026-07-01T23:00Z)
+        OffsetDateTime start = OffsetDateTime.parse("2026-07-01T23:00Z");
+        when(client.getGeneration(any(), any())).thenReturn(IntStream.range(0, 48)
+                .mapToObj(i -> interval(start.plusMinutes(30L * i).toString(), 50, 50))
+                .toList());
+
+        // when
+        List<DailyMix> result = service.getDailyMix();
+
+        // then
+        assertThat(result.get(1).complete()).isTrue();
     }
 
     private static GenerationInterval interval(String from, double wind, double gas) {

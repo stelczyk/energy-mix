@@ -7,17 +7,16 @@ import com.energymix.carbonintensity.GenerationInterval;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import static java.util.stream.Collectors.averagingDouble;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class EnergyMixService {
@@ -41,15 +40,19 @@ public class EnergyMixService {
         Map<LocalDate, List<GenerationInterval>> byDay = client.getGeneration(from, to).stream()
                 // API also returns the interval ending at `from` (previous day)
                 .filter(interval -> !interval.from().toInstant().isBefore(from))
-                .collect(groupingBy(interval -> interval.from().atZoneSameInstant(zone).toLocalDate(),
-                        TreeMap::new, toList()));
+                .collect(groupingBy(interval -> interval.from().atZoneSameInstant(zone).toLocalDate()));
 
-        return byDay.entrySet().stream()
-                .map(day -> toDailyMix(day.getKey(), day.getValue()))
+        // always all 3 days - a day without forecast is returned empty instead of disappearing
+        return today.datesUntil(today.plusDays(DAYS))
+                .map(date -> toDailyMix(date, byDay.getOrDefault(date, List.of()), zone))
                 .toList();
     }
 
-    private DailyMix toDailyMix(LocalDate date, List<GenerationInterval> intervals) {
+    private DailyMix toDailyMix(LocalDate date, List<GenerationInterval> intervals, ZoneId zone) {
+        if (intervals.isEmpty()) {
+            return new DailyMix(date, Map.of(), null, false);
+        }
+
         Map<FuelType, Double> averages = intervals.stream()
                 .flatMap(interval -> interval.generationMix().stream())
                 .collect(groupingBy(FuelShare::fuel, () -> new EnumMap<>(FuelType.class),
@@ -61,7 +64,13 @@ public class EnergyMixService {
                 .sum();
 
         averages.replaceAll((fuel, value) -> roundToOneDecimal(value));
-        return new DailyMix(date, averages, roundToOneDecimal(clean));
+        return new DailyMix(date, averages, roundToOneDecimal(clean),
+                intervals.size() == expectedIntervals(date, zone));
+    }
+
+    // 48 normally, 46/50 on DST change days
+    private static long expectedIntervals(LocalDate date, ZoneId zone) {
+        return Duration.between(date.atStartOfDay(zone), date.plusDays(1).atStartOfDay(zone)).toMinutes() / 30;
     }
 
     private static double roundToOneDecimal(double value) {

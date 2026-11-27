@@ -29,13 +29,13 @@ class EnergyMixControllerTest {
     void shouldReturnDailyMix_whenServiceReturnsData() {
         // given
         when(service.getDailyMix()).thenReturn(List.of(
-                new DailyMix(LocalDate.parse("2026-11-27"), Map.of(FuelType.WIND, 60.0), 60.0)));
+                new DailyMix(LocalDate.parse("2026-11-27"), Map.of(FuelType.WIND, 60.0), 60.0, true)));
 
         // when & then
         assertThat(mvc.get().uri("/api/v1/energy/mix"))
                 .hasStatusOk()
                 .bodyJson().isLenientlyEqualTo("""
-                        [{"date":"2026-11-27","fuels":{"WIND":60.0},"cleanPercentage":60.0}]
+                        [{"date":"2026-11-27","fuels":{"WIND":60.0},"cleanPercentage":60.0,"complete":true}]
                         """);
     }
 
