@@ -64,6 +64,7 @@ public class ChargingWindowService {
         if (best == null) {
             throw new NotEnoughForecastDataException(hours);
         }
-        return best;
+        // round only at the end - comparing windows must use full precision
+        return new ChargingWindow(best.start(), best.end(), Math.round(best.cleanPercentage() * 10) / 10.0);
     }
 }

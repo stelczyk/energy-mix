@@ -60,6 +60,11 @@ public class EnergyMixService {
                 .mapToDouble(Map.Entry::getValue)
                 .sum();
 
-        return new DailyMix(date, averages, clean);
+        averages.replaceAll((fuel, value) -> roundToOneDecimal(value));
+        return new DailyMix(date, averages, roundToOneDecimal(clean));
+    }
+
+    private static double roundToOneDecimal(double value) {
+        return Math.round(value * 10) / 10.0;
     }
 }
