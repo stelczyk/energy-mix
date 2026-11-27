@@ -3,7 +3,8 @@ const API_URL = import.meta.env.VITE_API_URL
 export interface DailyMix {
   date: string
   fuels: Record<string, number>
-  cleanPercentage: number
+  cleanPercentage: number | null // null = no forecast for this day yet
+  complete: boolean // false = some half-hours missing
 }
 
 export interface ChargingWindow {

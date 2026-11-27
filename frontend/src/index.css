@@ -8,3 +8,74 @@ body {
   max-width: 960px;
   padding: 1rem;
 }
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* 3 columns on desktop, 1 on phone */
+  gap: 1rem;
+}
+
+.day-card {
+  border: 1px solid #8884;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.day-card h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.clean-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.note {
+  opacity: 0.75;
+  font-size: 0.9rem;
+}
+
+.fuel-values {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* two columns of fuels */
+  gap: 0.25rem 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.fuel-values li {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fuel-values .value {
+  margin-left: auto; /* push value to the right edge */
+  font-variant-numeric: tabular-nums; /* digits of equal width - numbers line up */
+}
+
+.fuel-WIND { fill: #257de0; }
+.fuel-GAS { fill: #f47230; }
+.fuel-HYDRO { fill: #00b894; }
+.fuel-SOLAR { fill: #f2a600; }
+.fuel-IMPORTS { fill: #ee7fac; }
+.fuel-BIOMASS { fill: #008a17; }
+.fuel-NUCLEAR { fill: #6a4ce2; }
+.fuel-COAL { fill: #ec4647; }
+.fuel-OTHER { fill: #8a8a8a; }
+
+@media (prefers-color-scheme: dark) {
+  .fuel-WIND { fill: #338ced; }
+  .fuel-GAS { fill: #e76624; }
+  .fuel-HYDRO { fill: #00a888; }
+  .fuel-SOLAR { fill: #d28e05; }
+  .fuel-IMPORTS { fill: #e24d8b; }
+  .fuel-BIOMASS { fill: #0aac23; }
+  .fuel-NUCLEAR { fill: #9887ef; }
+  .fuel-COAL { fill: #eb6263; }
+  .fuel-OTHER { fill: #9c9c9c; }
+}

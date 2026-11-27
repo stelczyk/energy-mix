@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getDailyMix, type DailyMix } from './api'
+import { EnergyMixChart } from './EnergyMixChart'
 
 export default function App() {
   const [days, setDays] = useState<DailyMix[]>([])
@@ -13,13 +14,11 @@ export default function App() {
     <main>
       <h1>UK Energy Mix</h1>
       {error && <p role="alert">{error}</p>}
-      <ul>
+      <section className="days">
         {days.map((day) => (
-          <li key={day.date}>
-            {day.date}: {day.cleanPercentage}% clean
-          </li>
+          <EnergyMixChart key={day.date} day={day} />
         ))}
-      </ul>
+      </section>
     </main>
   )
 }
