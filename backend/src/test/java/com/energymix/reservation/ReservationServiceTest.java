@@ -16,6 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ReservationServiceTest {
@@ -87,6 +89,27 @@ class ReservationServiceTest {
         // when / then
         assertThatThrownBy(() -> service.create(CLIENT_ID, request("2026-07-01T14:00:00Z", 1)))
                 .isInstanceOf(ReservationConflictException.class);
+    }
+
+    @Test
+    void shouldQueryUpcomingReservations_fromCurrentTime() {
+        // when
+        service.findUpcoming(CLIENT_ID);
+
+        // then
+        verify(reservationRepository)
+                .findByClientIdAndEndTimeAfterOrderByStartTime(CLIENT_ID, Instant.parse("2026-07-01T10:00:00Z"));
+    }
+
+    @Test
+    void shouldNotDelete_whenReservationIsNotClients() {
+        // given
+        when(reservationRepository.findByIdAndClientId(5L, CLIENT_ID)).thenReturn(Optional.empty());
+
+        // when / then
+        assertThatThrownBy(() -> service.cancel(CLIENT_ID, 5L))
+                .isInstanceOf(ReservationNotFoundException.class);
+        verify(reservationRepository, never()).delete(any());
     }
 
     private static CreateReservationRequest request(String start, int hours) {

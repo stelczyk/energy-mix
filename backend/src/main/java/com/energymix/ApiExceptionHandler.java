@@ -4,6 +4,7 @@ import com.energymix.chargingwindow.NotEnoughForecastDataException;
 import com.energymix.reservation.ChargerNotFoundException;
 import com.energymix.reservation.InvalidReservationException;
 import com.energymix.reservation.ReservationConflictException;
+import com.energymix.reservation.ReservationNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,11 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(ChargerNotFoundException.class)
     ProblemDetail handleChargerNotFound(ChargerNotFoundException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+    }
+
+    @ExceptionHandler(ReservationNotFoundException.class)
+    ProblemDetail handleReservationNotFound(ReservationNotFoundException exception) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
     }
 

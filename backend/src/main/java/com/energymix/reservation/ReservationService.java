@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -44,5 +45,20 @@ public class ReservationService {
         } catch (DataIntegrityViolationException e) {
             throw new ReservationConflictException();
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationResponse> findUpcoming(UUID clientId) {
+        return reservationRepository.findByClientIdAndEndTimeAfterOrderByStartTime(clientId, clock.instant())
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    @Transactional
+    public void cancel(UUID clientId, Long reservationId) {
+        Reservation reservation = reservationRepository.findByIdAndClientId(reservationId, clientId)
+                .orElseThrow(() -> new ReservationNotFoundException(reservationId));
+        reservationRepository.delete(reservation);
     }
 }
