@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { getDailyMix, type DailyMix } from './api'
 import { ChargingWindowForm } from './ChargingWindowForm'
 import { EnergyMixChart } from './EnergyMixChart'
+import { ReservationsSection } from './ReservationsSection'
 
 export default function App() {
   const [days, setDays] = useState<DailyMix[]>([])
@@ -21,6 +22,7 @@ export default function App() {
         ))}
       </section>
       <ChargingWindowForm />
+      <ReservationsSection />
     </main>
   )
 }

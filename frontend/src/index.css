@@ -105,3 +105,34 @@ body {
 .error {
   color: #e5484d;
 }
+
+.reservations {
+  margin-top: 2rem;
+}
+
+.reservation-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.reservation-form label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reservation-list {
+  list-style: none;
+  padding: 0;
+}
+
+.reservation-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #8884;
+}

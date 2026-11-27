@@ -1,19 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { getChargingWindow, type ChargingWindow } from './api'
+import { formatUkTime } from './time'
 
 const HOURS = [1, 2, 3, 4, 5, 6]
-
-// data is about the UK grid - show UK time regardless of the browser's time zone
-function formatUkTime(iso: string) {
-  return new Date(iso).toLocaleString('en-GB', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: 'Europe/London',
-  })
-}
 
 export function ChargingWindowForm() {
   const [hours, setHours] = useState(3)
