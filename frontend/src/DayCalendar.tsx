@@ -51,7 +51,8 @@ export function DayCalendar({ chargerId, date, version, selected, onSelect }: Pr
       )}
       <div className="day-calendar">
         {HALF_HOURS.map((time) => {
-          const state = taken.get(time) ?? (`${date}T${time}` < now ? 'past' : 'free')
+          // past wins - matches "My reservations", which lists only upcoming bookings
+          const state = `${date}T${time}` < now ? 'past' : (taken.get(time) ?? 'free')
           return (
             <button
               key={time}
@@ -66,7 +67,6 @@ export function DayCalendar({ chargerId, date, version, selected, onSelect }: Pr
           )
         })}
       </div>
-      <p className="note">Free · Booked · Yours — click a free slot to set the start time.</p>
     </div>
   )
 }

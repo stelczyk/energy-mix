@@ -27,10 +27,13 @@ describe('DayCalendar', () => {
     expect(onSelect).toHaveBeenCalledWith('14:00')
   })
 
-  it('disables slots in the past', async () => {
-    vi.mocked(getOccupiedSlots).mockResolvedValue([])
+  it('shows past slots as past, even when they were booked', async () => {
+    vi.mocked(getOccupiedSlots).mockResolvedValue([
+      { startTime: '2000-01-01T10:00:00Z', endTime: '2000-01-01T11:00:00Z', mine: true },
+    ])
     render(<DayCalendar chargerId={1} date="2000-01-01" version={0} selected="" onSelect={vi.fn()} />)
 
-    expect((await screen.findByRole('button', { name: '14:00 past' })).hasAttribute('disabled')).toBe(true)
+    expect((await screen.findByRole('button', { name: '10:00 past' })).hasAttribute('disabled')).toBe(true)
+    expect(screen.getByRole('button', { name: '14:00 past' }).hasAttribute('disabled')).toBe(true)
   })
 })
