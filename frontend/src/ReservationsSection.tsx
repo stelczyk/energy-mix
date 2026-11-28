@@ -66,7 +66,7 @@ export function ReservationsSection({ prefill }: { prefill: BookingPrefill | nul
                 <strong>{reservation.chargerName}</strong>: {formatUkTime(reservation.startTime)} –{' '}
                 {formatUkTime(reservation.endTime)}
               </span>
-              <button type="button" onClick={() => handleCancel(reservation)}>
+              <button type="button" className="button-danger" onClick={() => handleCancel(reservation)}>
                 Cancel
               </button>
             </li>

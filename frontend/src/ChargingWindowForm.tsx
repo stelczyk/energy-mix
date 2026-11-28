@@ -63,7 +63,7 @@ export function ChargingWindowForm({ onBook }: { onBook?: (prefill: BookingPrefi
             Average clean energy: <strong>{result.cleanPercentage}%</strong>
           </p>
           {onBook && (
-            <button type="button" onClick={() => onBook(toPrefill(result))}>
+            <button type="button" className="button-primary" onClick={() => onBook(toPrefill(result))}>
               Book this window
             </button>
           )}
