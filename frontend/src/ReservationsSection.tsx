@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { cancelReservation, getChargers, getMyReservations, type Charger, type Reservation } from './api'
-import { ReservationForm } from './ReservationForm'
+import { ReservationForm, type BookingPrefill } from './ReservationForm'
 import { formatUkTime } from './time'
 
-export function ReservationsSection() {
+export function ReservationsSection({ prefill }: { prefill: BookingPrefill | null }) {
   const [chargers, setChargers] = useState<Charger[]>([])
   const [reservations, setReservations] = useState<Reservation[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -38,9 +38,18 @@ export function ReservationsSection() {
   }
 
   return (
-    <section className="reservations">
+    <section className="reservations" id="book">
       <h2>Book a charger</h2>
-      {chargers.length > 0 && <ReservationForm chargers={chargers} version={version} onBooked={refresh} />}
+      {chargers.length > 0 && (
+        // new key remounts the form, so a prefill from "Book this window" resets its fields
+        <ReservationForm
+          key={JSON.stringify(prefill)}
+          chargers={chargers}
+          version={version}
+          initial={prefill ?? undefined}
+          onBooked={refresh}
+        />
+      )}
       <h3>My reservations (UK time)</h3>
       {error && (
         <p role="alert" className="error">

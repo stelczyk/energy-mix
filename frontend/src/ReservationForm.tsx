@@ -5,17 +5,24 @@ import { HALF_HOURS, todayInUk } from './time'
 
 const HOURS = [1, 2, 3, 4, 5, 6]
 
+export interface BookingPrefill {
+  date: string
+  time: string
+  hours: number
+}
+
 interface Props {
   chargers: Charger[]
   version: number
+  initial?: BookingPrefill
   onBooked: () => void
 }
 
-export function ReservationForm({ chargers, version, onBooked }: Props) {
+export function ReservationForm({ chargers, version, initial, onBooked }: Props) {
   const [chargerId, setChargerId] = useState(chargers[0].id)
-  const [date, setDate] = useState(todayInUk())
-  const [time, setTime] = useState('12:00')
-  const [hours, setHours] = useState(1)
+  const [date, setDate] = useState(initial?.date ?? todayInUk())
+  const [time, setTime] = useState(initial?.time ?? '12:00')
+  const [hours, setHours] = useState(initial?.hours ?? 1)
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
