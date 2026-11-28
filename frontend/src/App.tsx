@@ -4,6 +4,7 @@ import { ChargingWindowForm } from './ChargingWindowForm'
 import { EnergyMixChart } from './EnergyMixChart'
 import type { BookingPrefill } from './ReservationForm'
 import { ReservationsSection } from './ReservationsSection'
+import { ThemeSelect } from './ThemeSelect'
 
 export default function App() {
   const [days, setDays] = useState<DailyMix[]>([])
@@ -21,7 +22,10 @@ export default function App() {
 
   return (
     <main>
-      <h1>UK Energy Mix</h1>
+      <header className="app-header">
+        <h1>UK Energy Mix</h1>
+        <ThemeSelect />
+      </header>
       {error && <p role="alert" className="error">{error}</p>}
       <section className="days">
         {days.map((day) => (

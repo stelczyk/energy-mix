@@ -3,6 +3,28 @@
   color-scheme: light dark;
 }
 
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.theme-select {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 :root {
   --accent: #257de0;
   --accent-hover: #1b64be;
@@ -65,27 +87,16 @@ body {
   font-variant-numeric: tabular-nums; /* digits of equal width - numbers line up */
 }
 
-.fuel-WIND { fill: #257de0; }
-.fuel-GAS { fill: #f47230; }
-.fuel-HYDRO { fill: #00b894; }
-.fuel-SOLAR { fill: #f2a600; }
-.fuel-IMPORTS { fill: #ee7fac; }
-.fuel-BIOMASS { fill: #008a17; }
-.fuel-NUCLEAR { fill: #6a4ce2; }
-.fuel-COAL { fill: #ec4647; }
-.fuel-OTHER { fill: #8a8a8a; }
-
-@media (prefers-color-scheme: dark) {
-  .fuel-WIND { fill: #338ced; }
-  .fuel-GAS { fill: #e76624; }
-  .fuel-HYDRO { fill: #00a888; }
-  .fuel-SOLAR { fill: #d28e05; }
-  .fuel-IMPORTS { fill: #e24d8b; }
-  .fuel-BIOMASS { fill: #0aac23; }
-  .fuel-NUCLEAR { fill: #9887ef; }
-  .fuel-COAL { fill: #eb6263; }
-  .fuel-OTHER { fill: #9c9c9c; }
-}
+/* light-dark(light, dark) follows color-scheme, which the theme switcher sets */
+.fuel-WIND { fill: light-dark(#257de0, #338ced); }
+.fuel-GAS { fill: light-dark(#f47230, #e76624); }
+.fuel-HYDRO { fill: light-dark(#00b894, #00a888); }
+.fuel-SOLAR { fill: light-dark(#f2a600, #d28e05); }
+.fuel-IMPORTS { fill: light-dark(#ee7fac, #e24d8b); }
+.fuel-BIOMASS { fill: light-dark(#008a17, #0aac23); }
+.fuel-NUCLEAR { fill: light-dark(#6a4ce2, #9887ef); }
+.fuel-COAL { fill: light-dark(#ec4647, #eb6263); }
+.fuel-OTHER { fill: light-dark(#8a8a8a, #9c9c9c); }
 
 .charging-window {
   margin-top: 2rem;
