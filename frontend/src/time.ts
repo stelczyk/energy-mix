@@ -23,3 +23,10 @@ export const HALF_HOURS = Array.from(
 export function ukDateTime(ms: number) {
   return new Date(ms).toLocaleString('sv-SE', { timeZone: 'Europe/London' }).slice(0, 16).replace(' ', 'T')
 }
+
+// "2026-11-29" + 1 -> "2026-11-30"; UTC arithmetic so DST never shifts the date
+export function addDays(date: string, days: number) {
+  const d = new Date(`${date}T00:00:00Z`)
+  d.setUTCDate(d.getUTCDate() + days)
+  return d.toISOString().slice(0, 10)
+}

@@ -31,6 +31,16 @@ describe('ReservationForm', () => {
     expect(onBooked).toHaveBeenCalled()
   })
 
+  it('switches day with arrows and reloads availability', async () => {
+    const user = userEvent.setup()
+    render(<ReservationForm chargers={CHARGERS} version={0} initial={PREFILL} onBooked={vi.fn()} />)
+
+    await user.click(screen.getByRole('button', { name: 'Next day' }))
+
+    expect((screen.getByLabelText('Date') as HTMLInputElement).value).toBe('2099-01-02')
+    expect(getOccupiedSlots).toHaveBeenLastCalledWith(1, '2099-01-02')
+  })
+
   it('shows conflict message from backend', async () => {
     vi.mocked(createReservation).mockRejectedValue(new Error('This charger is already booked for the selected time.'))
     const user = userEvent.setup()
